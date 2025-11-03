@@ -1,1 +1,1 @@
-Logo apos
+Star
