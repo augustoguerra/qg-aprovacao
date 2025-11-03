@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QG da Aprovação</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2EC4B6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="QG Aprovação">
+    <meta name="description" content="Seu quartel-general para aprovação em provas de inglês">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS GERAIS (MODO ESCURO) --- */
+        :root {
+            --cor-primaria: #2EC4B6;
+            --cor-primaria-hover: #24a094;
+            --cor-primaria-suave: rgba(46, 196, 182, 0.1);
+            --cor-secundaria: #FF9F1C;
+            --cor-fundo-app: #121212;
+            --cor-fundo-container: #1E1E1E;
+            --cor-fundo-card: #252525;
+            --cor-texto-principal: #E0E0E0;
+            --cor-texto-secundario: #A0A0A0;
+            --cor-texto-terciario: #757575;
+            --cor-aviso-fundo: #332821;
+            --cor-aviso-texto: #FF9F1C;
+            --cor-aviso-borda: #4a3728;
+            --cor-sucesso: #28A745;
+            --cor-borda-neutra: #333333;
+            --cor-borda-suave: #2A2A2A;
+            --sombra-padrao: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--cor-fundo-app);
+            color: var(--cor-texto-principal);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0;
+            background-color: var(--cor-fundo-container);
+            border-radius: 0;
+            box-shadow: var(--sombra-padrao);
+            min-height: 100vh;
+        }
+        
+        @media (min-width: 768px) {
+            body { align-items: center; padding: 20px; }
+            .container {
+                margin: 20px;
+                border-radius: 12px;
+                min-height: auto;
+                overflow: hidden;
+            }
+        }
+
+        /* --- MODAIS DE ONBOARDING --- */
+        .onboarding-modal {
+            padding: 40px; 
+            text-align: center;
+        }
+        #onboardingModalPath h1, #onboardingModalTest h1 { 
+            font-size: 28px; 
+            margin-bottom: 15px; 
+            font-weight: 600;
+            color: var(--cor-texto-principal);
+        }
+        #onboardingModalPath p, #onboardingModalTest p { 
+            font-size: 16px; 
+            color: var(--cor-texto-secundario); 
+            margin-bottom: 30px; 
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .path-choices { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .path-choices { grid-template-columns: 1fr 1fr; } }
+        
+        .path-card {
+            border: 1px solid var(--cor-borda-neutra);
+            border-radius: 12px; 
+            padding: 30px;
+            text-align: center; 
+            background: var(--cor-fundo-card);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: var(--sombra-suave);
+        }
+        .path-card:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border-color: var(--cor-primaria);
+        }
+        .path-card h2 { 
+            color: var(--cor-primaria); 
+            margin-top: 0; 
+            font-weight: 600;
+            font-size: 22px;
+        }
+        .path-card p { 
+            font-size: 15px; 
+            color: var(--cor-texto-secundario);
+        }
+
+        .test-choices-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .test-choices-grid { grid-template-columns: repeat(3, 1fr); } }
+        .test-card {
+            border: 1px solid var(--cor-borda-neutra);
+            border-radius: 12px; 
+            padding: 25px;
+            text-align: left; 
+            background: var(--cor-fundo-card); 
+            display: flex;
+            flex-direction: column; 
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            box-shadow: var(--sombra-suave);
+        }
+        .test-card:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border-color: var(--cor-primaria);
+        }
+        .test-card h3 {
+            margin-top: 0; 
+            margin-bottom: 15px; 
+            color: var(--cor-primaria);
+            font-size: 20px; 
+            text-align: center;
+            font-weight: 600;
+        }
+        .test-card ul { 
+            padding-left: 20px; 
+            font-size: 14px; 
+            color: var(--cor-texto-principal); 
+            line-height: 1.5; 
+            flex-grow: 1; 
+        }
+        .test-card li { margin-bottom: 10px; }
+        .test-card li strong { color: var(--cor-texto-principal); }
+        .test-card button {
+            background-color: var(--cor-primaria);
+            color: white; 
+            border: none; 
+            padding: 12px 20px;
+            font-size: 16px; 
+            font-weight: 600; 
+            border-radius: 8px;
+            cursor: pointer; 
+            transition: background-color 0.3s;
+            width: 100%; 
+            margin-top: 20px;
+        }
+        .test-card button:hover { 
+            background-color: var(--cor-primaria-hover); 
+        }
+
+        /* --- HEADER --- */
+        #appContainer { display: none; }
+        header {
+            background-color: var(--cor-fundo-container);
+            color: var(--cor-texto-principal);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--cor-borda-suave);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        header h1 { 
+            margin: 0; 
+            font-size: 22px; 
+            color: var(--cor-primaria);
+            font-weight: 700;
+        }
+        .header-right { display: flex; align-items: center; }
+        nav { margin-right: 20px; }
+        nav button {
+            background: none;
+            border: none;
+            color: var(--cor-texto-secundario);
+            padding: 10px 16px;
+            margin-left: 8px;
+            border-radius: 0;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        nav button.hidden { display: none; }
+        nav button:hover { color: var(--cor-texto-principal); }
+        nav button.active {
+            color: var(--cor-primaria);
+            border-bottom: 3px solid var(--cor-primaria);
+        }
+        .header-action-button {
+            background-color: var(--cor-fundo-card);
+            color: var(--cor-texto-principal); 
+            border: 1px solid var(--cor-borda-neutra);
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            font-size: 14px; 
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-left: 10px;
+        }
+        .header-action-button:hover { 
+            background-color: var(--cor-borda-neutra);
+            border-color: var(--cor-primaria);
+        }
+        #infoButton {
+            background-color: var(--cor-fundo-card);
+            color: var(--cor-texto-principal);
+            border: 1px solid var(--cor-borda-neutra);
+        }
+        #infoButton:hover { 
+            background-color: var(--cor-borda-neutra);
+            border-color: var(--cor-primaria);
+        }
+
+        /* --- SEÇÕES / PÁGINAS --- */
+        .page { padding: 30px; min-height: 400px; }
+        section:not(#homePage) { display: none; }
+
+        /* --- PÁGINA "HOJE" --- */
+        #dailyMission {
+            background-color: var(--cor-aviso-fundo);
+            border: 1px solid var(--cor-aviso-borda);
+            padding: 25px; 
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        #dailyMission h2 { 
+            margin-top: 0; 
+            color: var(--cor-aviso-texto); 
+            font-weight: 600;
+            font-size: 22px;
+        }
+        .task-list label {
+            display: block; 
+            font-size: 18px; 
+            margin: 15px 0; 
+            padding: 18px;
+            background-color: var(--cor-fundo-card);
+            border-radius: 8px;
+            border: 1px solid var(--cor-borda-neutra);
+            cursor: pointer; 
+            transition: all 0.3s;
+            box-shadow: var(--sombra-suave);
+        }
+        .task-list input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.2); 
+        }
+        .task-list label:hover { 
+            background-color: var(--cor-borda-neutra);
+            transform: translateY(-2px);
+        }
+        .task-list label.completed {
+            text-decoration: line-through;
+            background-color: rgba(40, 167, 69, 0.1);
+            border-color: rgba(40, 167, 69, 0.3);
+            color: var(--cor-texto-secundario);
+        }
+        .task-description { 
+            font-size: 14px; 
+            color: var(--cor-texto-secundario); 
+            margin-left: 28px; 
+            margin-top: 5px; 
+        }
+        
+        .task-resource-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            color: var(--cor-primaria);
+            text-decoration: none;
+            margin-left: 8px;
+            padding: 4px 10px;
+            background-color: var(--cor-primaria-suave);
+            border-radius: 6px;
+            border: 1px solid rgba(46, 196, 182, 0.3);
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+        .task-resource-link:hover { 
+            background-color: var(--cor-primaria);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(46, 196, 182, 0.3);
+        }
+        .task-resource-link::after {
+            content: "↗";
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* --- PÁGINA "PLANO DA SEMANA" --- */
+        .day-plan {
+            background: var(--cor-fundo-card); 
+            border: 1px solid var(--cor-borda-neutra); 
+            border-radius: 12px;
+            margin-bottom: 20px; 
+            padding: 25px;
+            box-shadow: var(--sombra-suave);
+            transition: transform 0.3s;
+        }
+        .day-plan:hover {
+            transform: translateY(-3px);
+        }
+        .day-plan h3 {
+            color: var(--cor-primaria); 
+            margin-top: 0;
+            border-bottom: 2px solid var(--cor-borda-suave); 
+            padding-bottom: 10px;
+            font-weight: 600;
+            font-size: 20px;
+        }
+        .day-plan ul { 
+            list-style-type: none; 
+            margin-left: 0; 
+            padding-left: 0;
+        }
+        .day-plan li { 
+            margin-bottom: 12px; 
+            line-height: 1.6;
+            padding-left: 20px;
+            position: relative;
+        }
+        .day-plan li:before {
+            content: "•";
+            color: var(--cor-primaria);
+            position: absolute;
+            left: 0;
+            font-size: 18px;
+        }
+        
+        .day-plan a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--cor-texto-principal);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 2px 0;
+        }
+        .day-plan a:hover {
+            color: var(--cor-primaria);
+            background-color: var(--cor-primaria-suave);
+            transform: translateX(3px);
+        }
+        .day-plan a::after {
+            content: "↗";
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--cor-primaria);
+            opacity: 0.7;
+        }
+        .day-plan a:hover::after {
+            opacity: 1;
+        }
+        
+        .day-plan li > span { 
+            font-weight: 500;
+            color: var(--cor-texto-principal);
+        }
+
+        /* --- PÁGINA "PROGRESSO" --- */
+        #progressStats {
+            background-color: var(--cor-fundo-card); 
+            border: 1px solid var(--cor-borda-neutra);
+            border-radius: 12px; 
+            padding: 25px; 
+            margin-bottom: 25px;
+            box-shadow: var(--sombra-suave);
+        }
+        #progressStats h3 { 
+            margin-top: 0; 
+            font-size: 18px; 
+            color: var(--cor-texto-principal); 
+            font-weight: 600;
+        }
+        .progress-bar-container {
+            width: 100%; 
+            height: 24px; 
+            background-color: var(--cor-borda-neutra);
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid var(--cor-borda-suave);
+        }
+        .progress-bar-fill {
+            height: 100%; 
+            width: 0%; 
+            background: linear-gradient(90deg, var(--cor-primaria), var(--cor-secundaria));
+            transition: width 0.5s ease-in-out; 
+            text-align: center;
+            line-height: 24px; 
+            color: white; 
+            font-weight: 600; 
+            font-size: 14px;
+            border-radius: 12px;
+        }
+        #calendarHeader {
+            text-align: center; 
+            font-size: 24px; 
+            font-weight: 600;
+            color: var(--cor-primaria); 
+            margin-bottom: 20px;
+        }
+        #calendarGrid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 8px; 
+            margin-top: 20px;
+        }
+        .calendar-day-name {
+            font-weight: 600; 
+            text-align: center; 
+            font-size: 12px;
+            color: var(--cor-texto-secundario); 
+            padding-bottom: 10px;
+        }
+        .calendar-day {
+            width: 100%; 
+            padding-bottom: 100%; 
+            position: relative;
+            background-color: var(--cor-fundo-card); 
+            border: 1px solid var(--cor-borda-neutra);
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            transition: all 0.3s;
+        }
+        .calendar-day:hover {
+            transform: scale(1.05);
+        }
+        .calendar-day-content {
+            position: absolute; 
+            top: 5px; 
+            left: 5px;
+            font-size: 14px; 
+            font-weight: 600;
+        }
+        .calendar-day.other-month { 
+            background-color: var(--cor-fundo-app); 
+            color: var(--cor-texto-terciario); 
+        }
+        .calendar-day.today .calendar-day-content {
+            color: var(--cor-primaria); 
+            background-color: rgba(46, 196, 182, 0.1);
+            border-radius: 50%; 
+            width: 24px; 
+            height: 24px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            top: 3px; 
+            left: 3px;
+        }
+        .calendar-day.completed {
+            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria));
+            color: white; 
+            border-color: transparent;
+        }
+
+        /* --- PÁGINAS "RECURSOS" / "SIMULADOS" --- */
+        .resource-section {
+            background-color: var(--cor-fundo-card);
+            border: 1px solid var(--cor-borda-neutra);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--sombra-suave);
+        }
+        .resource-section h3 {
+            border-bottom: 2px solid var(--cor-primaria);
+            padding-bottom: 10px; 
+            color: var(--cor-primaria);
+            font-weight: 600;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .resource-section ul { 
+            list-style-type: none; 
+            padding-left: 0; 
+        }
+        .resource-section li { 
+            margin-bottom: 12px; 
+            padding-left: 20px;
+            position: relative;
+        }
+        .resource-section li:before {
+            content: "•";
+            color: var(--cor-primaria);
+            position: absolute;
+            left: 0;
+            font-size: 18px;
+        }
+        
+        .resource-section a { 
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none; 
+            color: var(--cor-texto-principal); 
+            font-weight: 500; 
+            transition: all 0.3s ease;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin: 2px 0;
+            border: 1px solid transparent;
+        }
+        .resource-section a:hover { 
+            color: var(--cor-primaria);
+            background-color: var(--cor-primaria-suave);
+            border-color: rgba(46, 196, 182, 0.3);
+            transform: translateX(5px);
+        }
+        .resource-section a::after {
+            content: "↗";
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--cor-primaria);
+        }
+        
+        .dica-ouro {
+            background-color: var(--cor-aviso-fundo);
+            border: 1px solid var(--cor-aviso-borda);
+            padding: 20px; 
+            border-radius: 8px; 
+            font-style: italic;
+            margin-top: 20px;
+            color: var(--cor-texto-principal);
+        }
+        .dica-ouro strong {
+            color: var(--cor-aviso-texto);
+        }
+        .resource-section.hidden { display: none; }
+
+        /* --- MODAL "COMO USAR?" --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+        .modal-content {
+            background-color: var(--cor-fundo-container);
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            position: relative;
+            line-height: 1.6;
+            border: 1px solid var(--cor-borda-neutra);
+        }
+        .modal-close {
+            color: var(--cor-texto-secundario);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .modal-close:hover { 
+            color: var(--cor-texto-principal); 
+        }
+        .modal-content h2 { 
+            color: var(--cor-primaria); 
+            margin-top: 0; 
+            font-weight: 600;
+        }
+        .modal-content h4 { 
+            color: var(--cor-texto-principal); 
+            margin-top: 20px; 
+            margin-bottom: 10px; 
+            font-weight: 600;
+        }
+        .modal-content ol, .modal-content ul {
+            padding-left: 20px;
+        }
+        .modal-content li {
+            margin-bottom: 10px;
+            color: var(--cor-texto-principal);
+        }
+        .modal-content .hidden-content { display: none; }
+
+        /* --- MEDIA QUERIES PARA MOBILE --- */
+        @media (max-width: 767px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+            header h1 {
+                margin-bottom: 15px;
+            }
+            .header-right {
+                flex-direction: row; 
+                align-items: center;
+                width: 100%;
+                justify-content: space-between; 
+            }
+            nav {
+                display: flex;
+                flex-wrap: wrap; 
+                margin-right: 0;
+                order: 1; 
+            }
+            .header-action-buttons { 
+                display: flex;
+                order: 2; 
+            }
+            nav button {
+                margin: 0 5px 8px 0;
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+            .header-action-button {
+                font-size: 12px;
+                padding: 6px 10px;
+                margin-left: 8px;
+            }
+            
+            .page { padding: 20px; }
+            #onboardingModalPath, #onboardingModalTest { padding: 20px; }
+
+            .calendar-day-name { font-size: 11px; }
+            .calendar-day-content { font-size: 12px; top: 3px; left: 3px; }
+            .calendar-day.today .calendar-day-content { width: 20px; height: 20px; }
+            .task-list label { font-size: 16px; padding: 15px; }
+
+            .modal-content {
+                width: 95%;
+                margin: 20% auto;
+                padding: 20px;
+            }
+            
+            .task-resource-link {
+                display: inline-flex;
+                padding: 3px 8px;
+                font-size: 12px;
+                margin-left: 5px;
+            }
+            
+            .day-plan a, .resource-section a {
+                padding: 4px 6px;
+                font-size: 14px;
+            }
+        }
+
+        /* --- ANIMAÇÕES --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .task-list label {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--cor-fundo-app);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--cor-borda-neutra);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--cor-primaria);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div id="onboardingModalPath" class="onboarding-modal">
+            <h1>Bem-vindo! Qual seu objetivo?</h1>
+            <p>Escolha seu caminho para personalizar o plano de estudos.</p>
+            <div class="path-choices">
+                <div class="path-card" onclick="choosePath('ZERO')">
+                    <h2>Aprender do Zero</h2>
+                    <p>Começar do básico, focando em vocabulário, gramática e compreensão fundamental.</p>
+                </div>
+                <div class="path-card" onclick="choosePath('PROFICIENCY')">
+                    <h2>Preparar para Prova</h2>
+                    <p>Treinamento focado nas provas de proficiência (IELTS, CELPIP, PTE).</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="onboardingModalTest" class="onboarding-modal" style="display: none;">
+            <h1>Escolha sua Missão:</h1>
+            <p>Para qual prova você vai treinar?</p>
+            <div class="test-choices-grid">
+                <div class="test-card">
+                    <h3>IELTS General</h3>
+                    <ul>
+                        <li><strong>Para que serve:</strong> Imigração para Canadá, Austrália e Reino Unido.</li>
+                        <li><strong>Destaque (Fala):</strong> Entrevista com um <strong>examinador humano</strong>.</li>
+                    </ul>
+                    <button onclick="chooseTest('IELTS')">Escolher IELTS</button>
+                </div>
+                <div class="test-card">
+                    <h3>CELPIP General</h3>
+                    <ul>
+                        <li><strong>Para que serve:</strong> Foco 100% em imigração para o <strong>Canadá</strong>.</li>
+                        <li><strong>Destaque (Fala):</strong> 100% no computador, falando com um <strong>microfone</strong>.</li>
+                    </ul>
+                    <button onclick="chooseTest('CELPIP')">Escolher CELPIP</button>
+                </div>
+                <div class="test-card">
+                    <h3>PTE Core</h3>
+                    <ul>
+                        <li><strong>Para que serve:</strong> Imigração para <strong>Canadá</strong>, Austrália e Nova Zelândia.</li>
+                        <li><strong>Destaque (Fala):</strong> 100% no computador, correção por <strong>Inteligência Artificial</strong> (IA).</li>
+                    </ul>
+                    <button onclick="chooseTest('PTE')">Escolher PTE</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="appContainer">
+            <header>
+                <h1 id="appTitle">QG</h1>
+                <div class="header-right">
+                    <nav>
+                        <button id="nav-home" class="active" onclick="showPage('homePage')">HOJE</button>
+                        <button id="nav-plano" onclick="showPage('planoPage')">PLANO DA SEMANA</button>
+                        <button id="nav-progresso" onclick="showPage('progressoPage')">PROGRESSO</button>
+                        <button id="nav-recursos" onclick="showPage('recursosPage')">RECURSOS</button>
+                        <button id="nav-simulados" onclick="showPage('simuladosPage')">SIMULADOS</button>
+                    </nav>
+                    <div class="header-action-buttons">
+                        <button id="infoButton" class="header-action-button" onclick="openInfoModal()">Como Usar?</button>
+                        <button id="resetButton" class="header-action-button" onclick="resetApp()">Trocar Caminho</button>
+                    </div>
+                </div>
+            </header>
+
+            <main>
+                <section id="homePage" class="page"></section>
+                <section id="planoPage" class="page"></section>
+                <section id="progressoPage" class="page"></section>
+                <section id="recursosPage" class="page"></section>
+                <section id="simuladosPage" class="page"></section>
+            </main>
+        </div>
+    </div> 
+
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeInfoModal()">&times;</span>
+            
+            <div id="info-proficiency" class="hidden-content">
+                <h2>Bem-vindo ao QG da Aprovação</h2>
+                <p>Isto é um "Quartel-General" (QG) — uma ferramenta de <strong>treinamento cíclico</strong> para provas de proficiência.</p>
+                <h4>Como Usar a Ferramenta</h4>
+                <ol>
+                    <li><strong>Aba `HOJE`:</strong> Sua única meta do dia é completar as tarefas que aparecem ali.</li>
+                    <li><strong>Clique e Estude:</strong> Cada tarefa tem um link `(Abrir Recurso)` para a aula ou ferramenta.</li>
+                    <li><strong>Marque como Concluído:</strong> Ao terminar, marque o *checkbox* [ ].</li>
+                </ol>
+                <h4>O Método: O "Ciclo de Treinamento Semanal"</h4>
+                <p>Você vai **repetir este ciclo de 7 dias** toda semana. O seu progresso não vem de mudar o plano, mas de usar novos materiais (novos simulados da aba `SIMULADOS`) para praticar as mesmas habilidades.</p>
+                <h4>A Percepção de Evolução</h4>
+                <ol>
+                    <li><strong>Aba `PROGRESSO`:</strong> O calendário verde e a barra de % medem sua <strong>disciplina</strong>.</li>
+                    <li><strong>Tarefa de Sábado (Simulado):** É aqui que você mede sua <strong>nota real</strong>.</li>
+                </ol>
+                <p>Confie no ciclo. Repita até sua nota no simulado atingir seu objetivo.</p>
+            </div>
+
+            <div id="info-zero" class="hidden-content">
+                <h2>Bem-vindo ao QG: Inglês do Zero</h2>
+                <p>Este plano é um **ciclo de fundação**. O objetivo é construir sua base de inglês de forma sólida e constante.</p>
+                <h4>Como Usar a Ferramenta</h4>
+                <ol>
+                    <li><strong>Aba `HOJE`:</strong> Sua única meta do dia é completar as tarefas de fundação que aparecem ali.</li>
+                    <li><strong>Clique e Estude:</strong> Cada tarefa tem um link `(Abrir Recurso)` para uma aula de gramática, vocabulário ou prática.</li>
+                    <li><strong>Marque como Concluído:</strong> Ao terminar, marque o *checkbox* [ ].</li>
+                </ol>
+                <h4>O Método: O "Ciclo de Fundação Semanal"</h4>
+                <p>Você vai **repetir este ciclo de 7 dias** toda semana. A repetição é a chave para a memorização.</p>
+                <p>Toda semana, você vai solidificar seu entendimento do Verbo "To Be", do "Simple Present", e adicionar 30-50 novas palavras ao seu vocabulário.</p>
+                <h4>A Percepção de Evolução</h4>
+                <p>No início, a evolução não é uma "nota", mas sim o "reconhecimento":</p>
+                <ol>
+                    <li><strong>Aba `PROGRESSO`:</strong> O calendário verde e a barra de % medem sua <strong>disciplina</strong>. Não quebre a corrente!</li>
+                    <li><strong>Compreensão:</strong> Você começará a entender frases em músicas e filmes.</li>
+                    <li><strong>Produção:</strong> Você será capaz de formar suas próprias frases simples.</li>
+                </ol>
+                <p>Confie no ciclo. A consistência diária é o único segredo para aprender um idioma.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        let userPath = '';
+        const MESES_NOME = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+        const resourceLinks = {
+            'IELTS': {
+                'mon_tecnica': 'https://ieltsliz.com/ielts-reading-lessons-information-and-tips/',
+                'tue_tecnica_t1': 'https://www.youtube.com/watch?v=ORr3syyGgZ0',
+                'tue_tecnica_t2': 'https://www.youtube.com/watch?v=oIQNWwG7J8s'
+            },
+            'CELPIP': {
+                'mon_tecnica': 'https://www.youtube.com/watch?v=5lVfriZId3I',
+                'tue_tecnica_t1': 'https://www.youtube.com/watch?v=gvXNKQ8DkAs',
+                'tue_tecnica_t2': 'https://www.youtube.com/watch?v=xbOVMT46SkI'
+            },
+            'PTE': {
+                'mon_tecnica': 'https://www.pearsonpte.com/pte-academic/test-format/reading',
+                'tue_tecnica_t1': 'https://www.youtube.com/watch?v=gEoxvijyNVM',
+                'tue_tecnica_t2': 'https://www.youtube.com/watch?v=EdnstMQXpsY'
+            },
+            'GERAL_PROFICIENCY': { 
+                'thu_shadowing': 'https://www.youtube.com/watch?v=yVPYHNslNyc',
+                'fri_anki': 'https://apps.ankiweb.net/',
+                'fri_gramatica': 'https://www.engvid.com/',
+                'sun_imersao': 'https://www.cbc.ca/news'
+            },
+            'ZERO': {
+                'mon_tecnica': 'https://www.youtube.com/watch?v=S45kHeWnT0M',
+                'tue_tecnica': 'https://www.youtube.com/watch?v=j_JHswzitAk&t=6s',
+                'wed_tecnica': 'https://www.youtube.com/watch?v=bEB8-SWMYhI',
+                'thu_tecnica': 'https://www.youtube.com/watch?v=QKooXR02Rnc',
+                'fri_tecnica': 'https://www.youtube.com/watch?v=v14tGBVbNSg',
+                'sat_tecnica': 'https://www.duolingo.com/',
+                'sun_tecnica': 'https://apps.ankiweb.net/'
+            },
+            'INTERNO': { 
+                'pratica_reading': "javascript:showPage('simuladosPage')",
+                'pratica_writing': "javascript:showPage('simuladosPage')",
+                'revisao_writing': "javascript:showPage('recursosPage')",
+                'pratica_listening': "javascript:showPage('simuladosPage')",
+                'pratica_speaking': "javascript:showPage('simuladosPage')",
+                'interacao_speaking': "javascript:showPage('recursosPage')",
+                'pratica_sabado': "javascript:showPage('simuladosPage')"
+            }
+        };
+
+        window.onload = function() {
+            const savedPath = localStorage.getItem('userPath');
+            if (savedPath) {
+                userPath = savedPath;
+                document.getElementById('onboardingModalPath').style.display = 'none';
+                document.getElementById('onboardingModalTest').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                initializeApp();
+            } else {
+                document.getElementById('onboardingModalPath').style.display = 'block';
+            }
+        };
+        
+        function choosePath(pathName) {
+            if (pathName === 'ZERO') {
+                localStorage.setItem('userPath', 'ZERO');
+                window.location.reload();
+            } else {
+                document.getElementById('onboardingModalPath').style.display = 'none';
+                document.getElementById('onboardingModalTest').style.display = 'block';
+            }
+        }
+
+        function chooseTest(testName) {
+            localStorage.setItem('userPath', testName);
+            window.location.reload();
+        }
+
+        function initializeApp() {
+            if (userPath === 'ZERO') {
+                document.getElementById('appTitle').innerText = 'QG: Inglês do Zero';
+                document.getElementById('nav-simulados').classList.add('hidden');
+            } else {
+                document.getElementById('appTitle').innerText = `QG da Aprovação (${userPath})`;
+                document.getElementById('nav-simulados').classList.remove('hidden');
+            }
+
+            updateHomePage(); 
+            renderWeeklyPlan(); 
+            populateResources();
+            populateSimulados();
+            setupCheckboxes();
+            renderProgress();
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => { page.style.display = 'none'; });
+            
+            let pageElement = document.getElementById(pageId);
+            if (!pageElement) {
+                pageElement = document.createElement('section');
+                pageElement.id = pageId;
+                pageElement.className = 'page';
+                document.querySelector('main').appendChild(pageElement);
+            }
+            
+            pageElement.style.display = 'block';
+            
+            document.querySelectorAll('nav button').forEach(button => { button.classList.remove('active'); });
+            document.getElementById('nav-' + pageId.replace('Page', '')).classList.add('active');
+
+            if (pageId === 'progressoPage') {
+                renderProgress();
+            }
+        }
+
+        function updateHomePage() {
+            const today = new Date().getDay(); 
+            const page = document.getElementById('homePage');
+            
+            let title = '';
+            let tasksHTML = '';
+            
+            if (userPath === 'ZERO') {
+                const links = { ...resourceLinks.ZERO, ...resourceLinks.INTERNO };
+                switch (today) {
+                    case 1:
+                        title = "Missão de Hoje: Vocabulário Essencial";
+                        tasksHTML = `${createTask('task-zero-1', 'Vocabulário (30 min)', 'Aprender 10-15 palavras/frases novas.', links.mon_tecnica)}
+                                     ${createTask('task-zero-2', 'Revisão (15 min)', 'Revisar no Anki/caderno.', links.sun_tecnica)}`;
+                        break;
+                    case 2:
+                        title = "Missão de Hoje: Gramática Fundamental 1";
+                        tasksHTML = `${createTask('task-zero-1', 'Aula (20 min)', 'Aprender: Verbo "To Be" (ser/estar).', links.tue_tecnica)}
+                                     ${createTask('task-zero-2', 'Prática (10 min)', 'Escrever 5 frases com "am/is/are".', null)}`;
+                        break;
+                    case 3:
+                        title = "Missão de Hoje: Audição (Listening)";
+                        tasksHTML = `${createTask('task-zero-1', 'Audição (20 min)', 'Ouvir áudios para iniciantes. Tente entender a ideia geral.', links.wed_tecnica)}
+                                     ${createTask('task-zero-2', 'Vocabulário (10 min)', 'Anotar 3 palavras novas que ouviu.', null)}`;
+                        break;
+                    case 4:
+                        title = "Missão de Hoje: Foco na Pronúncia";
+                        tasksHTML = `${createTask('task-zero-1', 'Prática (20 min)', 'Praticar os sons difíceis (Ex: TH, R/L).', links.thu_tecnica)}
+                                     ${createTask('task-zero-2', 'Gravação (10 min)', 'Grave-se lendo 5 palavras em voz alta.', null)}`;
+                        break;
+                    case 5:
+                        title = "Missão de Hoje: Gramática Fundamental 2";
+                        tasksHTML = `${createTask('task-zero-1', 'Aula (20 min)', 'Aprender: "Simple Present" (ações do dia-a-dia).', links.fri_tecnica)}
+                                     ${createTask('task-zero-2', 'Prática (10 min)', 'Escrever 3 frases sobre sua rotina (Ex: "I wake up...").', null)}`;
+                        break;
+                    case 6:
+                        title = "Missão de Hoje: Imersão Leve";
+                        tasksHTML = `${createTask('task-zero-1', 'Prática (30 min)', 'Fazer lições no Duolingo/app similar.', links.sat_tecnica)}
+                                     ${createTask('task-zero-2', 'Música (15 min)', 'Ouvir uma música em inglês com a letra.', null)}`;
+                        break;
+                    case 0:
+                        title = "Missão de Hoje: Revisão";
+                        tasksHTML = `${createTask('task-zero-1', 'Revisão (30 min)', 'Revisar todo o vocabulário e gramática da semana.', links.sun_tecnica)}`;
+                        break;
+                }
+            
+            } else {
+                const links = { ...resourceLinks.GERAL_PROFICIENCY, ...resourceLinks.INTERNO, ...resourceLinks[userPath] };
+                switch (today) {
+                    case 1: 
+                        title = "Missão de Hoje: Foco em Reading";
+                        tasksHTML = `${createTask('task-mon-1', 'Técnica (30 min)', 'Aprender Skimming e Scanning.', links.mon_tecnica)}
+                                     ${createTask('task-mon-2', 'Prática (60 min)', 'Fazer um simulado de Reading cronometrado.', links.pratica_reading)}
+                                     ${createTask('task-mon-3', 'Revisão (30 min)', 'Corrigir e anotar por que errou.', null)}`;
+                        break;
+                    case 2:
+                        title = "Missão de Hoje: Foco em Writing";
+                        if (userPath === 'IELTS') {
+                            tasksHTML = `${createTask('task-tue-1', 'Técnica (Task 1: Letter)', 'Aprender o template da carta.', links.tue_tecnica_t1)}
+                                         ${createTask('task-tue-2', 'Técnica (Task 2: Essay)', 'Aprender o template da redação.', links.tue_tecnica_t2)}
+                                         ${createTask('task-tue-3', 'Prática (45 min)', 'Escrever uma Task 1 ou 2 cronometrada.', links.pratica_writing)}
+                                         ${createTask('task-tue-4', 'Revisão (15 min)', 'Usar Grammarly/QuillBot.', links.revisao_writing)}`;
+                        } else if (userPath === 'CELPIP') {
+                            tasksHTML = `${createTask('task-tue-1', 'Técnica (Task 1: Email)', 'Aprender o template do e-mail.', links.tue_tecnica_t1)}
+                                         ${createTask('task-tue-2', 'Técnica (Task 2: Survey)', 'Aprender o template da pesquisa.', links.tue_tecnica_t2)}
+                                         ${createTask('task-tue-3', 'Prática (45 min)', 'Escrever uma Task 1 ou 2 cronometrada.', links.pratica_writing)}
+                                         ${createTask('task-tue-4', 'Revisão (15 min)', 'Usar Grammarly/QuillBot.', links.revisao_writing)}`;
+                        } else if (userPath === 'PTE') {
+                             tasksHTML = `${createTask('task-tue-1', 'Técnica (Summarize Text)', 'Aprender a sumarizar texto.', links.tue_tecnica_t1)}
+                                         ${createTask('task-tue-2', 'Técnica (Write Essay)', 'Aprender o template da redação.', links.tue_tecnica_t2)}
+                                         ${createTask('task-tue-3', 'Prática (45 min)', 'Praticar as duas tarefas.', links.pratica_writing)}
+                                         ${createTask('task-tue-4', 'Revisão (15 min)', 'Usar Grammarly/QuillBot.', links.revisao_writing)}`;
+                        }
+                        break;
+                    case 3:
+                        title = "Missão de Hoje: Foco em Listening";
+                        tasksHTML = `${createTask('task-wed-1', 'Prática (45 min)', 'Fazer uma seção completa de Listening (anotar respostas).', links.pratica_listening)}
+                                     ${createTask('task-wed-2', 'Revisão (45 min)', 'Ouvir de novo lendo a transcrição e anotar palavras novas.', null)}`;
+                        break;
+                    case 4:
+                        title = "Missão de Hoje: Foco em Speaking";
+                        tasksHTML = `${createTask('task-thu-1', 'Aquecimento (15 min)', 'Prática de "Shadowing" (imitar um áudio).', links.thu_shadowing)}
+                                     ${createTask('task-thu-2', 'Produção (30 min)', 'Gravar-se respondendo perguntas do simulado.', links.pratica_speaking)}
+                                     ${createTask('task-thu-3', 'Análise (15 min)', 'Ouvir sua gravação e anotar erros (hesitações, gramática).', null)}
+                                     ${createTask('task-thu-4', 'Interação (30-45 min)', 'Praticar no Tandem/HelloTalk com foco em simulado.', links.interacao_speaking)}`;
+                        break;
+                    case 5:
+                        title = "Missão de Hoje: Vocabulário e Gramática";
+                        tasksHTML = `${createTask('task-fri-1', 'Revisão (45 min)', 'Revisar palavras da semana (usar Anki/Flashcards).', links.fri_anki)}
+                                     ${createTask('task-fri-2', 'Gramática (45 min)', 'Estudar um ponto fraco (ex: tempos verbais) no YouTube.', links.fri_gramatica)}`;
+                        break;
+                    case 6:
+                        title = "Missão de Hoje: Dia do Simulado";
+                        tasksHTML = `${createTask('task-sat-1', 'Simulado Completo (2-3h)', 'Fazer as 4 seções de uma vez, cronometrado, sem pausas.', links.pratica_sabado)}`;
+                        break;
+                    case 0:
+                        title = "Missão de Hoje: Análise e Imersão Leve";
+                        tasksHTML = `${createTask('task-sun-1', 'Análise (60 min)', 'Corrigir o simulado de sábado e planejar a próxima semana.', null)}
+                                     ${createTask('task-sun-2', 'Imersão Leve', 'Assistir um filme ou jogar em inglês. Relaxar.', links.sun_imersao)}`;
+                        break;
+                }
+            }
+            
+            page.innerHTML = `
+                <div id="dailyMission">
+                    <h2 id="missionTitle">${title}</h2>
+                    <div id="missionTasks" class="task-list">
+                        ${tasksHTML}
+                    </div>
+                </div>
+            `;
+            updateDicaDeOuro();
+        }
+
+        function createTask(id, title, description, link) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const taskId = `${id}-${todayStr}`;
+            const isChecked = localStorage.getItem(taskId) === 'true';
+            const checkedClass = isChecked ? 'completed' : '';
+            
+            const linkHTML = link 
+                ? `<a href="${link}" ${link.startsWith('http') ? 'target="_blank"' : ''} class="task-resource-link">Abrir Recurso</a>`
+                : '';
+            
+            return `<label for="${taskId}" class="${checkedClass}">
+                        <input type="checkbox" id="${taskId}" name="${taskId}" ${isChecked ? 'checked' : ''}>
+                        ${title}
+                        <div class="task-description">${description} ${linkHTML}</div>
+                    </label>`;
+        }
+        
+        function renderWeeklyPlan() {
+            const container = document.getElementById('planoPage');
+            let contentHTML = '';
+
+            if (userPath === 'ZERO') {
+                const links = { ...resourceLinks.ZERO, ...resourceLinks.INTERNO };
+                contentHTML = `
+                    <h2>Plano de Fundação Semanal</h2>
+                    <p>Este é o seu ciclo de 7 dias. Repita toda semana para construir uma base sólida.</p>
+                    <div class="day-plan">
+                        <h3>🕗 Segunda-feira: Vocabulário Essencial</h3>
+                        <ul>
+                            <li><a href="${links.mon_tecnica}" target="_blank"><strong>Vocabulário (30 min):</strong> Aprender 10-15 palavras/frases novas.</a></li>
+                            <li><a href="${links.sun_tecnica}" target="_blank"><strong>Revisão (15 min):</strong> Revisar no Anki/caderno.</a></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Terça-feira: Gramática Fundamental 1</h3>
+                        <ul>
+                            <li><a href="${links.tue_tecnica}" target="_blank"><strong>Aula (20 min):</strong> Aprender: Verbo "To Be" (ser/estar).</a></li>
+                            <li><span><strong>Prática (10 min):</strong> Escrever 5 frases com "am/is/are".</span></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Quarta-feira: Audição (Listening)</h3>
+                        <ul>
+                            <li><a href="${links.wed_tecnica}" target="_blank"><strong>Audição (20 min):</strong> Ouvir áudios para iniciantes.</a></li>
+                            <li><span><strong>Vocabulário (10 min):</strong> Anotar 3 palavras novas que ouviu.</span></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Quinta-feira: Foco na Pronúncia</h3>
+                        <ul>
+                            <li><a href="${links.thu_tecnica}" target="_blank"><strong>Prática (20 min):</strong> Praticar os sons difíceis (Ex: TH, R/L).</a></li>
+                            <li><span><strong>Gravação (10 min):</strong> Grave-se lendo 5 palavras em voz alta.</span></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Sexta-feira: Gramática Fundamental 2</h3>
+                        <ul>
+                            <li><a href="${links.fri_tecnica}" target="_blank"><strong>Aula (20 min):</strong> Aprender: "Simple Present".</a></li>
+                            <li><span><strong>Prática (10 min):</strong> Escrever 3 frases sobre sua rotina.</span></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Sábado: Imersão Leve</h3>
+                        <ul>
+                            <li><a href="${links.sat_tecnica}" target="_blank"><strong>Prática (30 min):</strong> Fazer lições no Duolingo/app similar.</a></li>
+                            <li><span><strong>Música (15 min):</strong> Ouvir uma música em inglês com a letra.</span></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Domingo: Revisão</h3>
+                        <ul>
+                            <li><a href="${links.sun_tecnica}" target="_blank"><strong>Revisão (30 min):</strong> Revisar todo o vocabulário e gramática da semana.</a></li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                const links = { ...resourceLinks.GERAL_PROFICIENCY, ...resourceLinks.INTERNO, ...resourceLinks[userPath] };
+                let tuesdayPlan = '';
+                if (userPath === 'IELTS') {
+                    tuesdayPlan = `
+                        <li><a href="${links.tue_tecnica_t1}" target="_blank"><strong>Técnica (Task 1: Letter):</strong> Aprender o template da carta.</a></li>
+                        <li><a href="${links.tue_tecnica_t2}" target="_blank"><strong>Técnica (Task 2: Essay):</strong> Aprender o template da redação.</a></li>
+                        <li><a href="${links.pratica_writing}"><strong>Prática (45 min):</strong> Escrever uma Task 1 ou 2 cronometrada.</a></li>
+                        <li><a href="${links.revisao_writing}"><strong>Revisão (15 min):</strong> Usar Grammarly/QuillBot.</a></li>
+                    `;
+                } else if (userPath === 'CELPIP') {
+                    tuesdayPlan = `
+                        <li><a href="${links.tue_tecnica_t1}" target="_blank"><strong>Técnica (Task 1: Email):</strong> Aprender o template do e-mail.</a></li>
+                        <li><a href="${links.tue_tecnica_t2}" target="_blank"><strong>Técnica (Task 2: Survey):</strong> Aprender o template da pesquisa.</a></li>
+                        <li><a href="${links.pratica_writing}"><strong>Prática (45 min):</strong> Escrever uma Task 1 ou 2 cronometrada.</a></li>
+                        <li><a href="${links.revisao_writing}"><strong>Revisão (15 min):</strong> Usar Grammarly/QuillBot.</a></li>
+                    `;
+                } else if (userPath === 'PTE') {
+                    tuesdayPlan = `
+                        <li><a href="${links.tue_tecnica_t1}" target="_blank"><strong>Técnica (Summarize Text):</strong> Aprender a sumarizar texto.</a></li>
+                        <li><a href="${links.tue_tecnica_t2}" target="_blank"><strong>Técnica (Write Essay):</strong> Aprender o template da redação.</a></li>
+                        <li><a href="${links.pratica_writing}"><strong>Prática (45 min):</strong> Praticar as duas tarefas.</a></li>
+                        <li><a href="${links.revisao_writing}"><strong>Revisão (15 min):</strong> Usar Grammarly/QuillBot.</a></li>
+                    `;
+                }
+
+                contentHTML = `
+                    <h2>Plano de Batalha Completo</h2>
+                    <p>Este é o mapa da sua semana. Clique em uma tarefa para abrir o recurso de estudo.</p>
+                    <div class="day-plan">
+                        <h3>🕗 Segunda-feira: Foco em Reading</h3>
+                        <ul>
+                            <li><a href="${links.mon_tecnica}" target="_blank"><strong>Técnica (30 min):</strong> Aprender Skimming e Scanning.</a></li>
+                            <li><a href="${links.pratica_reading}"><strong>Prática (60 min):</strong> Fazer um simulado de Reading cronometrado.</a></li>
+                            <li><span><strong>Revisão (30 min):</strong> Corrigir e anotar por que errou.</span></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Terça-feira: Foco em Writing</h3>
+                        <ul>${tuesdayPlan}</ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Quarta-feira: Foco em Listening</h3>
+                        <ul>
+                            <li><a href="${links.pratica_listening}"><strong>Prática (45 min):</strong> Fazer seção completa de Listening.</a></li>
+                            <li><span><strong>Revisão (45 min):</strong> Ouvir de novo com transcrição e anotar palavras.</span></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Quinta-feira: Foco em Speaking</h3>
+                        <ul>
+                            <li><a href="${links.thu_shadowing}" target="_blank"><strong>Aquecimento (15 min):</strong> Prática de "Shadowing" (imitar um áudio).</a></li>
+                            <li><a href="${links.pratica_speaking}"><strong>Produção (30 min):</strong> Gravar-se respondendo perguntas.</a></li>
+                            <li><span><strong>Análise (15 min):</strong> Ouvir gravação e anotar erros.</span></li>
+                            <li><a href="${links.interacao_speaking}"><strong>Interação (30-45 min):</strong> Praticar no Tandem/HelloTalk com foco.</a></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Sexta-feira: Vocabulário e Gramática</h3>
+                        <ul>
+                            <li><a href="${links.fri_anki}" target="_blank"><strong>Revisão (45 min):</strong> Revisar palavras da semana (usar Anki).</a></li>
+                            <li><a href="${links.fri_gramatica}" target="_blank"><strong>Gramática (45 min):</strong> Estudar um ponto fraco (ex: tempos verbais).</a></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Sábado: Dia do Simulado</h3>
+                        <ul>
+                            <li><a href="${links.pratica_sabado}"><strong>Simulado Completo (2-3h):</strong> Fazer as 4 seções de uma vez, cronometrado.</a></li>
+                        </ul>
+                    </div>
+                    <div class="day-plan">
+                        <h3>🕗 Domingo: Análise e Imersão Leve</h3>
+                        <ul>
+                            <li><span><strong>Análise (60 min):</strong> Corrigir o simulado de sábado e planejar a próxima semana.</span></li>
+                            <li><a href="${links.sun_imersao}" target="_blank"><strong>Imersão Leve:</strong> Assistir um filme ou jogar em inglês. Relaxar.</a></li>
+                        </ul>
+                    </div>
+                `;
+            }
+            container.innerHTML = contentHTML;
+        }
+
+        function setupCheckboxes() {
+            document.querySelector('main').addEventListener('change', function(e) {
+                if (e.target.type === 'checkbox' && e.target.id.startsWith('task-')) {
+                    const label = e.target.parentElement;
+                    const taskId = e.target.id;
+                    
+                    if (e.target.checked) {
+                        label.classList.add('completed');
+                        localStorage.setItem(taskId, 'true');
+                    } else {
+                        label.classList.remove('completed');
+                        localStorage.setItem(taskId, 'false');
+                    }
+                    checkDayCompletion();
+                }
+            });
+        }
+
+        function checkDayCompletion() {
+            const allTasks = document.querySelectorAll('#missionTasks input[type="checkbox"]');
+            if (allTasks.length === 0) return; 
+            
+            const allCompleted = Array.from(allTasks).every(task => task.checked);
+            const todayISO = new Date().toISOString().split('T')[0]; 
+
+            if (allCompleted) {
+                localStorage.setItem('progress-' + todayISO, 'completed');
+            } else {
+                localStorage.removeItem('progress-' + todayISO);
+            }
+            renderProgress();
+        }
+
+        function renderProgress() {
+            const page = document.getElementById('progressoPage');
+            page.innerHTML = `
+                <h2>Progresso e Consistência</h2>
+                <p>"Não quebre a corrente!" Complete todas as tarefas na aba "HOJE" para marcar um dia como verde.</p>
+                <div id="progressStats">
+                    <h3 id="progressPercentText">Calculando consistência do mês...</h3>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressPercentBar">0%</div>
+                    </div>
+                </div>
+                <div id="calendarHeader">Carregando Calendário...</div>
+                <div id="calendarGrid">
+                    <div class="calendar-day-name">Dom</div> <div class="calendar-day-name">Seg</div>
+                    <div class="calendar-day-name">Ter</div> <div class="calendar-day-name">Qua</div>
+                    <div class="calendar-day-name">Qui</div> <div class="calendar-day-name">Sex</div>
+                    <div class="calendar-day-name">Sáb</div>
+                </div>
+            `;
+            
+            const grid = document.getElementById('calendarGrid');
+            const header = document.getElementById('calendarHeader');
+            const percentText = document.getElementById('progressPercentText');
+            const percentBar = document.getElementById('progressPercentBar');
+            
+            const today = new Date();
+            const currentDay = today.getDate();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            header.innerText = `${MESES_NOME[currentMonth]} ${currentYear}`;
+
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay(); 
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            let daysCompletedThisMonth = 0;
+            let daysPassedSoFar = currentDay; 
+
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                grid.innerHTML += `<div class="calendar-day other-month"></div>`;
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayDate = new Date(currentYear, currentMonth, i);
+                const isoDate = dayDate.toISOString().split('T')[0];
+                
+                let classes = 'calendar-day';
+                if (i === currentDay) { classes += ' today'; }
+                
+                if (localStorage.getItem('progress-' + isoDate) === 'completed') {
+                    classes += ' completed';
+                    if (i <= currentDay) { daysCompletedThisMonth++; }
+                }
+
+                grid.innerHTML += `
+                    <div class="${classes}" id="day-${isoDate}">
+                        <div class="calendar-day-content">${i}</div>
+                    </div>
+                `;
+            }
+            
+            let percentage = 0;
+            if (daysPassedSoFar > 0) {
+                percentage = Math.round((daysCompletedThisMonth / daysPassedSoFar) * 100);
+            }
+            
+            percentText.innerText = `Consistência em ${MESES_NOME[currentMonth]}: ${percentage}%`;
+            percentBar.style.width = percentage + '%';
+            percentBar.innerText = percentage + '%';
+        }
+        
+        function populateResources() {
+            const container = document.getElementById('recursosPage');
+            let contentHTML = '';
+            
+            if (userPath === 'ZERO') {
+                contentHTML = `
+                    <h2>Central de Recursos (Iniciante)</h2>
+                    <p>Links e ferramentas essenciais para sua jornada.</p>
+                    <div class="resource-section">
+                        <h3>Gramática e Vocabulário</h3>
+                        <ul>
+                            <li><a href="https://www.youtube.com/@engvid" target="_blank">EngVid</a> - Aulas de gramática (filtre por "Beginner").</li>
+                            <li><a href="https://www.duolingo.com/" target="_blank">Duolingo</a> - Prática diária de vocabulário.</li>
+                            <li><a href="https://apps.ankiweb.net/" target="_blank">Anki</a> - App de flashcards para memorização (Essencial!).</li>
+                        </ul>
+                    </div>
+                    <div class="resource-section">
+                        <h3>Audição (Listening)</h3>
+                        <ul>
+                            <li><a href="https://www.youtube.com/@EnglishStoriesforLearning" target="_blank">English Stories for Learning</a> - Histórias simples.</li>
+                            <li><a href="https://www.youtube.com/@PeppaPigEN" target="_blank">Peppa Pig (Canal Oficial)</a> - Diálogos simples e repetitivos.</li>
+                        </ul>
+                    </div>
+                    <div class="resource-section">
+                        <h3>Pronúncia</h3>
+                        <ul>
+                            <li><a href="https://rachelsenglish.com/" target="_blank">Rachel's English</a> - Foco em pronúncia americana.</li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                let testSpecificHTML = '';
+                if (userPath === 'IELTS') {
+                    testSpecificHTML = `<div class="resource-section"><h3>Foco: IELTS</h3><ul><li><a href="https://ieltsliz.com/" target="_blank">IELTS Liz</a></li><li><a href="https://www.youtube.com/@E2IELTS" target="_blank">E2 IELTS (YouTube)</a></li><li><a href="https://www.youtube.com/@FastrackIELTS" target="_blank">Fastrack IELTS</a></li></ul></div>`;
+                } else if (userPath === 'CELPIP') {
+                    testSpecificHTML = `<div class="resource-section"><h3>Foco: CELPIP</h3><ul><li><a href="https://www.youtube.com/@CELPIPOfficial" target="_blank">CELPIP Official (YouTube)</a></li><li><a href="https://www.youtube.com/@PrestoEnglish" target="_blank">Presto English (YouTube)</a></li><li><a href="https://www.youtube.com/@hzadeducation-coachingcent986" target="_blank">HZad Education (YouTube)</a></li></ul></div>`;
+                } else if (userPath === 'PTE') {
+                    testSpecificHTML = `<div class="resource-section"><h3>Foco: PTE</h3><ul><li><a href="https://www.youtube.com/@E2PTE" target="_blank">E2 PTE (YouTube)</a></li><li><a href="https://www.youtube.com/@PTEAcademicOfficial" target="_blank">PTE Academic Official (YouTube)</a></li></ul></div>`;
+                }
+
+                contentHTML = `
+                    <h2>Central de Recursos</h2>
+                    <p>Links e ferramentas essenciais para sua prova.</p>
+                    ${testSpecificHTML}
+                    <div class="resource-section"><h3>Gramática e Pronúncia (Todos)</h3><ul><li><a href="https://www.engvid.com/" target="_blank">EngVid</a></li><li><a href="https://rachelsenglish.com/" target="_blank">Rachel's English</a></li></ul></div>
+                    <div class="resource-section"><h3>Ferramentas de Escrita (Todos)</h3><ul><li><a href="https://www.grammarly.com" target="_blank">Grammarly</a></li><li><a href="https://quillbot.com/" target="_blank">QuillBot</a></li></ul></div>
+                    <div class="resource-section"><h3>Prática de Fala (Todos)</h3><div class="dica-ouro"><strong>Dica de Ouro (Tandem / HelloTalk):</strong> Não use esses apps só para "bater papo". Seja direto. Coloque no seu perfil: <strong id="dica-prova-nome">"Estudando para o [PROVA]. Procuro parceiro(a) sério(a) para praticar perguntas de simulado. 15 min inglês / 15 min português."</strong></div></div>
+                `;
+            }
+            container.innerHTML = contentHTML;
+        }
+
+        function populateSimulados() {
+            const container = document.getElementById('simuladosPage');
+            let contentHTML = '';
+            
+            if (userPath !== 'ZERO') {
+                let testSimuladosHTML = '';
+                if (userPath === 'IELTS') {
+                    testSimuladosHTML = `<div class="resource-section"><h3>Simulados Completos (IELTS)</h3><ul><li><a href="https://www.ielts.org/about-the-test/sample-test-questions" target="_blank">Simulado Gratuito Oficial (ielts.org)</a></li><li><a href="https://ieltsonlinetests.com/" target="_blank">IELTS Online Tests</a></li></ul></div>`;
+                } else if (userPath === 'CELPIP') {
+                    testSimuladosHTML = `<div class="resource-section"><h3>Simulados Completos (CELPIP)</h3><ul><li><a href="https://www.celpip.ca/prepare-for-celpip/free-practice-tests/" target="_blank">Simulado Gratuito Oficial (celpip.ca)</a></li></ul></div>`;
+                } else if (userPath === 'PTE') {
+                    testSimuladosHTML = `<div class="resource-section"><h3>Simulados Completos (PTE)</h3><ul><li><a href="https://www.pearsonpte.com/preparation/practice-tests" target="_blank">Simulado Gratuito Oficial (pearsonpte.com)</a></li></ul></div>`;
+                }
+                
+                contentHTML = `
+                    <h2>Arsenal de Simulados e Prática</h2>
+                    ${testSimuladosHTML}
+                    <div class="resource-section"><h3>Banco de Prática (Geral)</h3><p>Use estes temas para suas práticas de Writing e Speaking.</p><ul><li><a href="https://ieltsliz.com/ielts-speaking-part-2-topics/" target="_blank">Temas Speaking (IELTS Liz)</a></li><li><a href="https://www.ielts-exam.net/ielts_writing_samples_task_2/" target="_blank">Temas Writing Task 2</a></li></ul></div>
+                `;
+            }
+            container.innerHTML = contentHTML;
+        }
+
+        function updateDicaDeOuro() {
+            const dicaElement = document.getElementById('dica-prova-nome');
+            if (dicaElement) {
+                dicaElement.innerText = `Estudando para o ${userPath}. Procuro parceiro(a) sério(a) para praticar perguntas de simulado. 15 min inglês / 15 min português.`;
+            }
+        }
+
+        function resetApp() {
+            if (confirm("Você quer apagar todo o seu progresso e voltar para a tela de seleção inicial?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+        
+        const modal = document.getElementById('infoModal');
+        
+        function openInfoModal() {
+            if(userPath === 'ZERO') {
+                document.getElementById('info-zero').style.display = 'block';
+                document.getElementById('info-proficiency').style.display = 'none';
+            } else {
+                document.getElementById('info-zero').style.display = 'none';
+                document.getElementById('info-proficiency').style.display = 'block';
+            }
+            modal.style.display = 'block';
+        }
+        
+        function closeInfoModal() {
+            modal.style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+    </script>
+</body>
+</html>
